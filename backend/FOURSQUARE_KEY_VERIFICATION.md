@@ -5,11 +5,10 @@
 
 ## Analysis
 
-### Current API Key
-- **Format:** `VUWZRHF0H1Z2LAEZSMOT0YWO2ARI0OH3B4YAUO5IE0VRFFXY`
-- **Length:** 48 characters
-- **Prefix:** Does NOT start with `fsq_`
-- **Status:** ❌ Invalid format
+### Current API Key Status
+- **Length:** 48 characters (example shown was invalid format)
+- **Prefix:** Did NOT start with `fsq_`
+- **Status:** ❌ Invalid format (key has been removed from this file for security)
 
 ### Expected Format for Places API v3
 - **Prefix:** Should start with `fsq_`
@@ -18,17 +17,17 @@
 
 ## Test Results
 
-### Test 1: Direct API Key (Current Format)
+### Test 1: Direct API Key (Old Format - Example)
 ```bash
-curl -H "Authorization: VUWZRHF0H1..." \
+curl -H "Authorization: YOUR_API_KEY_HERE" \
   "https://api.foursquare.com/v3/places/search?query=coffee&ll=40.7128,-74.0060"
 ```
-**Result:** ❌ `{"message":"Invalid request token."}` (401)
+**Result:** ❌ `{"message":"Invalid request token."}` (401) - Old API format
 
-### Test 2: Bearer Token Format
+### Test 2: Bearer Token Format (New Format)
 ```bash
-curl -H "Authorization: Bearer VUWZRHF0H1..." \
-  "https://api.foursquare.com/v3/places/search?query=coffee&ll=40.7128,-74.0060"
+curl -H "Authorization: Bearer YOUR_SERVICE_KEY_HERE" \
+  "https://places-api.foursquare.com/places/search?query=coffee&ll=40.7128,-74.0060"
 ```
 **Result:** ⚠️ `{"message":"This endpoint is no longer supported..."}`
 
