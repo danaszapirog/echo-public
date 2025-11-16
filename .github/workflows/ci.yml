@@ -1,0 +1,107 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: echo_user
+          POSTGRES_PASSWORD: echo_password
+          POSTGRES_DB: echo_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+      redis:
+        image: redis:7-alpine
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install dependencies
+        working-directory: ./backend
+        run: npm ci
+
+      - name: Run linter
+        working-directory: ./backend
+        run: npm run lint
+        continue-on-error: true
+
+      - name: Run tests
+        working-directory: ./backend
+        env:
+          NODE_ENV: test
+          DATABASE_URL: postgresql://echo_user:echo_password@localhost:5432/echo_test
+          JWT_SECRET: test-jwt-secret-key-for-ci-environment-min-32-chars
+          REDIS_URL: redis://localhost:6379
+        run: npm test
+
+      - name: Build TypeScript
+        working-directory: ./backend
+        run: npm run build
+
+      - name: Check for build errors
+        working-directory: ./backend
+        run: |
+          if [ ! -d "dist" ]; then
+            echo "Build failed - dist directory not found"
+            exit 1
+          fi
+
+  infrastructure-test:
+    runs-on: ubuntu-latest
+    if: contains(github.event.head_commit.message, '[infra]') || contains(github.event.pull_request.title, '[infra]')
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: infrastructure/package-lock.json
+
+      - name: Install dependencies
+        working-directory: ./infrastructure
+        run: npm ci
+
+      - name: Build infrastructure
+        working-directory: ./infrastructure
+        run: npm run build
+
+      - name: CDK Synth
+        working-directory: ./infrastructure
+        env:
+          AWS_REGION: us-east-1
+        run: npm run synth
+

@@ -1,0 +1,169 @@
+// Prisma Schema for Project Echo
+// Phase 1: Core Tables (users, places)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                String    @id @default(uuid()) @db.Uuid
+  email             String    @unique @db.VarChar(255)
+  passwordHash      String    @map("password_hash") @db.VarChar(255)
+  username          String    @unique @db.VarChar(50)
+  bio               String?   @db.Text
+  profilePictureUrl String?   @map("profile_picture_url") @db.Text
+  role              String    @default("consumer") @db.VarChar(20)
+  isVerified        Boolean   @default(false) @map("is_verified")
+  isPrivate         Boolean   @default(false) @map("is_private")
+  createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt         DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  lastLoginAt       DateTime? @map("last_login_at") @db.Timestamptz(6)
+
+  // Relations
+  spots           Spot[]
+  wantToGo        WantToGo[]
+  playlists       Playlist[]
+  followers       Follow[] @relation("Follower")
+  followees       Follow[] @relation("Followee")
+  feedItems       FeedItem[] @relation("FeedUser")
+  authoredFeedItems FeedItem[] @relation("FeedAuthor")
+
+  @@index([email])
+  @@index([username])
+  @@index([role])
+  @@map("users")
+}
+
+model Place {
+  id               String    @id @default(uuid()) @db.Uuid
+  externalPlaceId  String    @unique @map("external_place_id") @db.VarChar(255)
+  externalProvider String    @default("foursquare") @map("external_provider") @db.VarChar(50)
+  name             String    @db.VarChar(255)
+  latitude         Decimal   @db.Decimal(10, 8)
+  longitude        Decimal   @db.Decimal(11, 8)
+  categories       Json?     // Array of category strings
+  cachedData       Json?     @map("cached_data") // Store essential fields from external API
+  cachedAt         DateTime? @map("cached_at") @db.Timestamptz(6)
+  createdAt        DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  // Relations
+  spots     Spot[]
+  wantToGo   WantToGo[]
+
+  @@index([externalPlaceId])
+  @@index([categories], type: Gin)
+  @@map("places")
+}
+
+// Placeholder models for future phases (will be implemented in Phase 3)
+model Spot {
+  id              String    @id @default(uuid()) @db.Uuid
+  userId          String    @map("user_id") @db.Uuid
+  placeId         String    @map("place_id") @db.Uuid
+  rating          Int
+  notes           String?   @db.Text
+  tags            String[]
+  photos          Json?     // Array of S3 URLs
+  guidedQuestions Json?     @map("guided_questions") // Store Q&A pairs
+  createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  place        Place         @relation(fields: [placeId], references: [id], onDelete: Restrict)
+  playlists    PlaylistSpot[]
+
+  @@unique([userId, placeId])
+  @@index([userId])
+  @@index([placeId])
+  @@index([createdAt(sort: Desc)])
+  @@index([tags], type: Gin)
+  @@map("spots")
+}
+
+model WantToGo {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  placeId   String   @map("place_id") @db.Uuid
+  notes     String?  @db.Text
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  place Place @relation(fields: [placeId], references: [id], onDelete: Restrict)
+
+  @@unique([userId, placeId])
+  @@index([userId])
+  @@index([placeId])
+  @@map("want_to_go")
+}
+
+model Playlist {
+  id            String   @id @default(uuid()) @db.Uuid
+  userId        String   @map("user_id") @db.Uuid
+  title         String   @db.VarChar(255)
+  description   String?  @db.Text
+  coverImageUrl String?  @map("cover_image_url") @db.Text
+  isPublished   Boolean  @default(false) @map("is_published")
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  publishedAt   DateTime? @map("published_at") @db.Timestamptz(6)
+
+  user  User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  spots PlaylistSpot[]
+
+  @@index([userId])
+  @@index([isPublished, publishedAt(sort: Desc)])
+  @@map("playlists")
+}
+
+model PlaylistSpot {
+  playlistId  String   @map("playlist_id") @db.Uuid
+  spotId      String   @map("spot_id") @db.Uuid
+  displayOrder Int     @default(0) @map("display_order")
+  addedAt     DateTime @default(now()) @map("added_at") @db.Timestamptz(6)
+
+  playlist Playlist @relation(fields: [playlistId], references: [id], onDelete: Cascade)
+  spot     Spot     @relation(fields: [spotId], references: [id], onDelete: Cascade)
+
+  @@id([playlistId, spotId])
+  @@index([playlistId, displayOrder])
+  @@index([spotId])
+  @@map("playlist_spots")
+}
+
+model Follow {
+  id         String   @id @default(uuid()) @db.Uuid
+  followerId String   @map("follower_id") @db.Uuid
+  followeeId String   @map("followee_id") @db.Uuid
+  status     String   @default("active") @db.VarChar(20)
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  follower User @relation("Follower", fields: [followerId], references: [id], onDelete: Cascade)
+  followee User @relation("Followee", fields: [followeeId], references: [id], onDelete: Cascade)
+
+  @@unique([followerId, followeeId])
+  @@index([followerId, status])
+  @@index([followeeId, status])
+  @@map("follows")
+}
+
+model FeedItem {
+  id         String   @id @default(uuid()) @db.Uuid
+  userId     String   @map("user_id") @db.Uuid
+  contentType String  @map("content_type") @db.VarChar(20)
+  contentId  String  @map("content_id") @db.Uuid
+  authorId   String  @map("author_id") @db.Uuid
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  user   User @relation("FeedUser", fields: [userId], references: [id], onDelete: Cascade)
+  author User @relation("FeedAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt(sort: Desc)])
+  @@index([authorId])
+  @@map("feed_items")
+}
