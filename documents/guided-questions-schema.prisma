@@ -1,0 +1,24 @@
+// Prisma schema for guided_question_templates table
+// Add this to your main schema.prisma file
+
+model GuidedQuestionTemplate {
+  id                  String   @id @default(uuid())
+  category            String   // e.g., "restaurant", "fitness", "default"
+  displayName         String   // e.g., "Restaurant", "Fitness", "Default"
+  questionId          String   // Unique ID for the question (e.g., "must_order", "vibe")
+  questionText        String   // The actual question text
+  questionType        String   // "text", "select", "multiselect"
+  isRequired          Boolean  @default(false)
+  placeholder         String?  // Optional placeholder text
+  options             String?  // JSON string array for select/multiselect options
+  displayOrder        Int      // Order in which to display questions
+  foursquareCategories String[] // Array of Foursquare category names this applies to
+  
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@index([category])
+  @@index([questionId])
+  @@map("guided_question_templates")
+}
+

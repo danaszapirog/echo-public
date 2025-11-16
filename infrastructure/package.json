@@ -1,0 +1,35 @@
+{
+  "name": "echo-infrastructure",
+  "version": "1.0.0",
+  "description": "AWS CDK infrastructure for Project Echo",
+  "main": "bin/echo-infra.js",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "cdk": "cdk",
+    "deploy": "cdk deploy",
+    "deploy:dev": "cdk deploy EchoInfraStack-dev --profile default",
+    "deploy:staging": "cdk deploy EchoInfraStack-staging --profile default",
+    "deploy:prod": "cdk deploy EchoInfraStack-prod --profile default",
+    "diff": "cdk diff",
+    "synth": "cdk synth",
+    "bootstrap": "cdk bootstrap"
+  },
+  "keywords": [
+    "aws",
+    "cdk",
+    "infrastructure"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "typescript": "~5.3.3"
+  },
+  "dependencies": {
+    "aws-cdk-lib": "^2.100.0",
+    "constructs": "^10.3.0",
+    "source-map-support": "^0.5.21"
+  }
+}
+

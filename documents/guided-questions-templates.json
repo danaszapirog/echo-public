@@ -1,0 +1,506 @@
+{
+  "version": "1.0",
+  "description": "Guided question templates for Project Echo spot creation, organized by place category",
+  "defaultQuestions": [
+    {
+      "id": "vibe",
+      "question": "What's the vibe?",
+      "type": "text",
+      "required": false,
+      "placeholder": "Describe the atmosphere and energy of this place",
+      "order": 1
+    },
+    {
+      "id": "best_time",
+      "question": "Best time to visit?",
+      "type": "text",
+      "required": false,
+      "placeholder": "e.g., Weekday mornings, Friday nights, Sunset",
+      "order": 2
+    },
+    {
+      "id": "crowd_level",
+      "question": "How crowded does it get?",
+      "type": "select",
+      "required": false,
+      "options": ["Very quiet", "Moderate", "Busy", "Very crowded"],
+      "order": 3
+    },
+    {
+      "id": "general_tip",
+      "question": "Any general tips?",
+      "type": "text",
+      "required": false,
+      "placeholder": "Share any helpful tips, insider knowledge, or things to know before visiting",
+      "order": 4
+    }
+  ],
+  "categories": [
+    {
+      "category": "restaurant",
+      "displayName": "Restaurant",
+      "foursquareCategories": [
+        "Restaurant",
+        "Food & Drink",
+        "Café",
+        "Fast Food Restaurant",
+        "Pizza Place",
+        "Asian Restaurant",
+        "Italian Restaurant",
+        "Mexican Restaurant",
+        "American Restaurant",
+        "French Restaurant",
+        "Japanese Restaurant",
+        "Chinese Restaurant",
+        "Thai Restaurant",
+        "Indian Restaurant",
+        "Mediterranean Restaurant",
+        "Seafood Restaurant",
+        "Steakhouse",
+        "BBQ Joint",
+        "Diner",
+        "Brunch Spot"
+      ],
+      "questions": [
+        {
+          "id": "must_order",
+          "question": "What's the one dish you must order?",
+          "type": "text",
+          "required": false,
+          "placeholder": "e.g., The truffle pasta, Wagyu burger",
+          "order": 1
+        },
+        {
+          "id": "price_range",
+          "question": "Price range?",
+          "type": "select",
+          "required": false,
+          "options": ["$ - Budget friendly", "$$ - Moderate", "$$$ - Upscale", "$$$$ - Fine dining"],
+          "order": 2
+        },
+        {
+          "id": "dietary_options",
+          "question": "Dietary options available?",
+          "type": "multiselect",
+          "required": false,
+          "options": ["Vegetarian", "Vegan", "Gluten-free", "Keto", "Halal", "Kosher"],
+          "order": 3
+        },
+        {
+          "id": "service_speed",
+          "question": "Service speed?",
+          "type": "select",
+          "required": false,
+          "options": ["Very fast", "Quick", "Normal", "Slow", "Very slow"],
+          "order": 4
+        },
+        {
+          "id": "reservation_needed",
+          "question": "Reservation needed?",
+          "type": "select",
+          "required": false,
+          "options": ["Not needed", "Recommended", "Required"],
+          "order": 5
+        },
+        {
+          "id": "ambiance",
+          "question": "What's the ambiance like?",
+          "type": "text",
+          "required": false,
+          "placeholder": "e.g., Cozy, Romantic, Lively, Casual",
+          "order": 6
+        }
+      ]
+    },
+    {
+      "category": "fitness",
+      "displayName": "Fitness",
+      "foursquareCategories": [
+        "Gym / Fitness Center",
+        "Yoga Studio",
+        "Pilates Studio",
+        "CrossFit Gym",
+        "Boxing Gym",
+        "Martial Arts Dojo",
+        "Dance Studio",
+        "Rock Climbing Gym",
+        "Swimming Pool",
+        "Tennis Court",
+        "Basketball Court",
+        "Running Track",
+        "Outdoor Gym",
+        "Personal Trainer",
+        "Fitness Class"
+      ],
+      "questions": [
+        {
+          "id": "workout_type",
+          "question": "What type of workout is this best for?",
+          "type": "multiselect",
+          "required": false,
+          "options": ["Cardio", "Strength training", "Yoga", "Pilates", "HIIT", "Flexibility", "Endurance", "Rehabilitation"],
+          "order": 1
+        },
+        {
+          "id": "equipment_quality",
+          "question": "Equipment quality?",
+          "type": "select",
+          "required": false,
+          "options": ["Basic", "Good", "Excellent", "State-of-the-art"],
+          "order": 2
+        },
+        {
+          "id": "crowd_level",
+          "question": "How crowded does it get?",
+          "type": "select",
+          "required": false,
+          "options": ["Empty", "Light", "Moderate", "Busy", "Very crowded"],
+          "order": 3
+        },
+        {
+          "id": "membership_required",
+          "question": "Membership required?",
+          "type": "select",
+          "required": false,
+          "options": ["No membership needed", "Day pass available", "Membership required"],
+          "order": 5
+        },
+        {
+          "id": "amenities",
+          "question": "What amenities does it have?",
+          "type": "multiselect",
+          "required": false,
+          "options": ["Locker rooms", "Showers", "Sauna", "Steam room", "Pool", "Parking", "Café", "Towel service", "Personal training"],
+          "order": 6
+        },
+        {
+          "id": "atmosphere",
+          "question": "What's the atmosphere like?",
+          "type": "text",
+          "required": false,
+          "placeholder": "e.g., Intense, Welcoming, Competitive, Relaxed",
+          "order": 7
+        }
+      ]
+    },
+    {
+      "category": "beauty",
+      "displayName": "Beauty",
+      "foursquareCategories": [
+        "Hair Salon",
+        "Nail Salon",
+        "Spa",
+        "Massage",
+        "Beauty Salon",
+        "Barbershop",
+        "Nail Salon",
+        "Waxing Salon",
+        "Eyelash Studio",
+        "Brow Studio",
+        "Makeup Artist",
+        "Facial Spa",
+        "Med Spa",
+        "Tattoo Parlor",
+        "Piercing Studio"
+      ],
+      "questions": [
+        {
+          "id": "service_type",
+          "question": "What service did you get?",
+          "type": "text",
+          "required": false,
+          "placeholder": "e.g., Haircut, Facial, Manicure, Massage",
+          "order": 1
+        },
+        {
+          "id": "price_range",
+          "question": "Price range?",
+          "type": "select",
+          "required": false,
+          "options": ["$ - Budget friendly", "$$ - Moderate", "$$$ - Upscale", "$$$$ - Luxury"],
+          "order": 2
+        },
+        {
+          "id": "ambiance",
+          "question": "What's the ambiance like?",
+          "type": "text",
+          "required": false,
+          "placeholder": "e.g., Relaxing, Modern, Luxurious, Cozy",
+          "order": 5
+        }
+      ]
+    },
+    {
+      "category": "bars_and_clubs",
+      "displayName": "Bars & Clubs",
+      "foursquareCategories": [
+        "Bar",
+        "Nightclub",
+        "Cocktail Bar",
+        "Wine Bar",
+        "Beer Bar",
+        "Sports Bar",
+        "Dive Bar",
+        "Rooftop Bar",
+        "Speakeasy",
+        "Brewery",
+        "Pub",
+        "Karaoke Bar",
+        "Jazz Club",
+        "Dance Club",
+        "Lounge"
+      ],
+      "questions": [
+        {
+          "id": "must_order",
+          "question": "What's the one drink you must order?",
+          "type": "text",
+          "required": false,
+          "placeholder": "e.g., The signature cocktail, Local IPA",
+          "order": 1
+        },
+        {
+          "id": "music_type",
+          "question": "What type of music?",
+          "type": "multiselect",
+          "required": false,
+          "options": ["Live music", "DJ", "Hip-hop", "Electronic", "Rock", "Jazz", "Latin", "Top 40", "No music"],
+          "order": 2
+        },
+        {
+          "id": "crowd_type",
+          "question": "What's the crowd like?",
+          "type": "text",
+          "required": false,
+          "placeholder": "e.g., Young professionals, Tourists, Locals, Mixed",
+          "order": 3
+        },
+        {
+          "id": "cover_charge",
+          "question": "Cover charge?",
+          "type": "select",
+          "required": false,
+          "options": ["No cover", "Sometimes", "Always"],
+          "order": 5
+        },
+        {
+          "id": "dress_code",
+          "question": "Dress code?",
+          "type": "select",
+          "required": false,
+          "options": ["Casual", "Smart casual", "Dressy", "No dress code"],
+          "order": 6
+        },
+        {
+          "id": "vibe",
+          "question": "What's the vibe?",
+          "type": "text",
+          "required": false,
+          "placeholder": "e.g., Energetic, Chill, Sophisticated, Rowdy",
+          "order": 7
+        },
+        {
+          "id": "food_available",
+          "question": "Food available?",
+          "type": "select",
+          "required": false,
+          "options": ["No food", "Bar snacks", "Full menu"],
+          "order": 8
+        }
+      ]
+    },
+    {
+      "category": "culture_attractions",
+      "displayName": "Culture Attractions",
+      "foursquareCategories": [
+        "Museum",
+        "Art Gallery",
+        "Theater",
+        "Concert Hall",
+        "Opera House",
+        "Cinema",
+        "Historic Site",
+        "Monument",
+        "Library",
+        "Cultural Center",
+        "Performing Arts Venue",
+        "Comedy Club",
+        "Convention Center",
+        "Exhibition Center",
+        "Planetarium"
+      ],
+      "questions": [
+        {
+          "id": "must_see",
+          "question": "What's the one thing you must see?",
+          "type": "text",
+          "required": false,
+          "placeholder": "e.g., The Van Gogh exhibit, The main collection, The architecture",
+          "order": 1
+        },
+        {
+          "id": "visit_duration",
+          "question": "How long should you plan to spend?",
+          "type": "select",
+          "required": false,
+          "options": ["30 minutes", "1 hour", "2-3 hours", "Half day", "Full day"],
+          "order": 2
+        },
+        {
+          "id": "ticket_price",
+          "question": "Ticket price?",
+          "type": "select",
+          "required": false,
+          "options": ["Free", "$ - Under $15", "$$ - $15-30", "$$$ - $30-50", "$$$$ - $50+"],
+          "order": 3
+        },
+        {
+          "id": "reservation_needed",
+          "question": "Reservation/ticket needed?",
+          "type": "select",
+          "required": false,
+          "options": ["Walk-in welcome", "Reservation recommended", "Advance booking required"],
+          "order": 4
+        },
+        {
+          "id": "best_time",
+          "question": "Best time to visit?",
+          "type": "select",
+          "required": false,
+          "options": ["Weekday morning", "Weekday afternoon", "Weekend morning", "Weekend afternoon", "Evening", "Any time"],
+          "order": 5
+        },
+        {
+          "id": "crowd_level",
+          "question": "How crowded does it get?",
+          "type": "select",
+          "required": false,
+          "options": ["Very quiet", "Moderate", "Busy", "Very crowded"],
+          "order": 6
+        },
+        {
+          "id": "photo_friendly",
+          "question": "Photo-friendly?",
+          "type": "select",
+          "required": false,
+          "options": ["No photos allowed", "Some areas only", "Very photo-friendly"],
+          "order": 7
+        },
+        {
+          "id": "accessibility",
+          "question": "Accessibility features?",
+          "type": "multiselect",
+          "required": false,
+          "options": ["Wheelchair accessible", "Audio guides", "Sign language tours", "Large print materials"],
+          "order": 8
+        }
+      ]
+    },
+    {
+      "category": "nature",
+      "displayName": "Nature",
+      "foursquareCategories": [
+        "Park",
+        "Beach",
+        "Hiking Trail",
+        "Mountain",
+        "Viewpoint",
+        "Scenic Lookout",
+        "Waterfall",
+        "Lake",
+        "Forest",
+        "Garden",
+        "Botanical Garden",
+        "National Park",
+        "State Park",
+        "Nature Reserve",
+        "Wildlife Area",
+        "Campground",
+        "Picnic Area"
+      ],
+      "questions": [
+        {
+          "id": "best_time",
+          "question": "Best time to visit?",
+          "type": "select",
+          "required": false,
+          "options": ["Sunrise", "Morning", "Afternoon", "Sunset", "Night", "Any time"],
+          "order": 1
+        },
+        {
+          "id": "difficulty_level",
+          "question": "Difficulty level?",
+          "type": "select",
+          "required": false,
+          "options": ["Easy - Flat, short", "Moderate - Some elevation", "Hard - Steep, long", "N/A - Not a trail"],
+          "order": 2
+        },
+        {
+          "id": "visit_duration",
+          "question": "How long should you plan to spend?",
+          "type": "select",
+          "required": false,
+          "options": ["30 minutes", "1 hour", "2-3 hours", "Half day", "Full day", "Overnight"],
+          "order": 3
+        },
+        {
+          "id": "entrance_fee",
+          "question": "Entrance fee?",
+          "type": "select",
+          "required": false,
+          "options": ["Free", "Small fee", "Moderate fee", "Expensive"],
+          "order": 4
+        },
+        {
+          "id": "parking",
+          "question": "Parking available?",
+          "type": "select",
+          "required": false,
+          "options": ["Free parking", "Paid parking", "Limited parking", "No parking"],
+          "order": 5
+        },
+        {
+          "id": "amenities",
+          "question": "What amenities are available?",
+          "type": "multiselect",
+          "required": false,
+          "options": ["Restrooms", "Picnic areas", "Drinking water", "Visitor center", "Camping", "Swimming allowed", "Dogs allowed"],
+          "order": 6
+        },
+        {
+          "id": "best_season",
+          "question": "Best season to visit?",
+          "type": "multiselect",
+          "required": false,
+          "options": ["Spring", "Summer", "Fall", "Winter", "Year-round"],
+          "order": 7
+        },
+        {
+          "id": "photo_spot",
+          "question": "Best photo spot?",
+          "type": "text",
+          "required": false,
+          "placeholder": "e.g., The overlook, The waterfall, The beach",
+          "order": 8
+        },
+        {
+          "id": "what_to_bring",
+          "question": "What should you bring?",
+          "type": "text",
+          "required": false,
+          "placeholder": "e.g., Water, Hiking boots, Sunscreen, Camera",
+          "order": 9
+        }
+      ]
+    }
+  ],
+  "categoryMappings": {
+    "restaurant": ["restaurant"],
+    "fitness": ["fitness"],
+    "beauty": ["beauty"],
+    "bars_and_clubs": ["bars_and_clubs"],
+    "culture_attractions": ["culture_attractions"],
+    "nature": ["nature"]
+  }
+}
+
