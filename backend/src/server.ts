@@ -36,7 +36,11 @@ app.get('/health', (_req, res) => {
 
 // API routes
 import authRoutes from './routes/authRoutes';
+import userRoutes from './routes/userRoutes';
+import placeRoutes from './routes/placeRoutes';
 app.use(`/api/${env.API_VERSION}/auth`, authRoutes);
+app.use(`/api/${env.API_VERSION}/users`, userRoutes);
+app.use(`/api/${env.API_VERSION}/places`, placeRoutes);
 
 // 404 handler
 app.use(notFoundHandler);
