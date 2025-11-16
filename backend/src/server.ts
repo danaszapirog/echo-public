@@ -38,9 +38,15 @@ app.get('/health', (_req, res) => {
 import authRoutes from './routes/authRoutes';
 import userRoutes from './routes/userRoutes';
 import placeRoutes from './routes/placeRoutes';
+import spotRoutes from './routes/spotRoutes';
+import wantToGoRoutes from './routes/wantToGoRoutes';
+import mapRoutes from './routes/mapRoutes';
 app.use(`/api/${env.API_VERSION}/auth`, authRoutes);
 app.use(`/api/${env.API_VERSION}/users`, userRoutes);
 app.use(`/api/${env.API_VERSION}/places`, placeRoutes);
+app.use(`/api/${env.API_VERSION}/spots`, spotRoutes);
+app.use(`/api/${env.API_VERSION}/want-to-go`, wantToGoRoutes);
+app.use(`/api/${env.API_VERSION}/map`, mapRoutes);
 
 // 404 handler
 app.use(notFoundHandler);

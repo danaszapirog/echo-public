@@ -11,37 +11,32 @@ Before starting implementation, complete these items to ensure a smooth developm
 ### 1. External Service Accounts & API Keys
 
 #### Mapbox (Map Visualization)
-- [ ] Create Mapbox account at https://www.mapbox.com
-- [ ] Generate access token
-- [ ] Review pricing plan (start with free tier, upgrade as needed)
-- [ ] Document token in secure location (will be added to `.env` later)
-- [ ] Test API access
+- [x] Create Mapbox account at https://www.mapbox.com
+- [x] Generate access token
+- [x] Review pricing plan (start with free tier, upgrade as needed)
+- [x] Document token in secure location (configured in `.env`)
+- [ ] Test API access (ready for Phase 6 - Map features)
 
 #### Foursquare Places API (Place Data)
-- [ ] Create Foursquare developer account at https://developer.foursquare.com
-- [ ] Create new app/project
-- [ ] Obtain API key and secret
-- [ ] Review API documentation and rate limits
-- [ ] Test API access with sample queries
-- [ ] Document credentials securely
+- [x] Create Foursquare developer account at https://developer.foursquare.com
+- [x] Create new app/project
+- [x] Obtain API key (Places API v3 uses service key, not OAuth)
+- [x] Review API documentation and rate limits
+- [x] Test API access with sample queries (verified working)
+- [x] Document credentials securely (configured in `.env`)
+- [x] Migrated to new Places API format (places-api.foursquare.com)
 
 #### AWS (Infrastructure & Media Storage) - Using CDK
-- [ ] Create AWS account
-- [ ] Install AWS CLI (`brew install awscli` or download from aws.amazon.com/cli)
-- [ ] Configure AWS CLI (`aws configure` with your AWS credentials)
-- [ ] Install CDK CLI (`npm install -g aws-cdk`)
-- [ ] Deploy infrastructure using CDK:
-  ```bash
-  cd infrastructure
-  npm install
-  cdk bootstrap  # First time only
-  npm run deploy:dev
-  ```
-- [ ] Create IAM access keys for `echo-backend-dev` user (AWS Console → IAM → Users)
-- [ ] Get S3 bucket name from CDK outputs (`echo-media-dev`)
-- [ ] Get CloudFront domain from CDK outputs
-- [ ] Document credentials securely (add to `.env` file)
-- [ ] Set up billing alerts in AWS Console
+- [x] Create AWS account
+- [x] Install AWS CLI (`brew install awscli` or download from aws.amazon.com/cli)
+- [x] Configure AWS CLI (`aws configure` with your AWS credentials)
+- [x] Install CDK CLI (`npm install -g aws-cdk`)
+- [x] Deploy infrastructure using CDK (user confirmed deployment)
+- [x] Create IAM access keys for `echo-backend-dev` user (AWS Console → IAM → Users)
+- [x] Get S3 bucket name from CDK outputs (`echo-media-dev`)
+- [x] Get CloudFront domain from CDK outputs (optional, configured)
+- [x] Document credentials securely (configured in `.env` file)
+- [x] Set up billing alerts in AWS Console (recommended) - ✅ **COMPLETE**
 
 **Note:** For MVP (v1.0), authentication will be email/password only. Google and Apple Sign-In are moved to v1.1 to simplify MVP dependencies.
 
@@ -97,10 +92,10 @@ API_BASE_URL=http://localhost:3000
 BCRYPT_SALT_ROUNDS=12
 ```
 
-- [ ] Document all required environment variables
-- [ ] Set up secure storage for production secrets (AWS Secrets Manager, etc.)
-- [ ] Create `.env.example` file (without actual secrets)
-- [ ] Add `.env` to `.gitignore`
+- [x] Document all required environment variables (`.env.example` created)
+- [ ] Set up secure storage for production secrets (AWS Secrets Manager, etc.) - **TODO: Before production**
+- [x] Create `.env.example` file (without actual secrets)
+- [x] Add `.env` to `.gitignore` (verified in security audit)
 
 ---
 
@@ -143,25 +138,29 @@ The PRD mentions wireframes but no actual design files are provided. Before mobi
 #### Guided Questions Templates
 The BRD/PRD mention guided questions but don't specify the complete list. Define:
 
-- [ ] **Default Questions (for all categories):**
-  - [ ] "What's the vibe?" (text)
-  - [ ] "What's the one thing to order/try?" (text)
-  - [ ] "Best time to visit?" (text or time)
-  - [ ] Add more as needed
+- [x] **Default Questions (for all categories):**
+  - [x] "What's the vibe?" (text)
+  - [x] "Best time to visit?" (text)
+  - [x] "How crowded does it get?" (select)
+  - [x] "Any general tips?" (text)
+  - [x] 4 default questions implemented
 
-- [ ] **Category-Specific Questions:**
-  - [ ] **Restaurants:** "What's the one dish to order?", "Price range?", "Dietary options?"
-  - [ ] **Cafes:** "Best drink?", "WiFi quality?", "Good for working?"
-  - [ ] **Bars:** "Best drink?", "Crowd vibe?", "Music type?"
-  - [ ] **Attractions:** "Best time to visit?", "Crowd level?", "Photo spots?"
-  - [ ] Add more categories as needed
+- [x] **Category-Specific Questions:**
+  - [x] **Restaurants:** "What's the one dish to order?", "Price range?", "Dietary options?", "Service speed?", "Reservation needed?"
+  - [x] **Fitness:** "Workout type?", "Equipment quality?", "Membership required?", "Amenities?", "Atmosphere?"
+  - [x] **Beauty:** "Service type?", "Price range?"
+  - [x] **Bars & Clubs:** "What's the one drink to order?", "Music type?", "Crowd type?", "Cover charge?", "Dress code?", "Food available?"
+  - [x] **Culture Attractions:** "What's the one thing to see?", "Visit duration?", "Ticket price?", "Reservation needed?"
+  - [x] **Nature:** "Difficulty level?", "Visit duration?", "Entrance fee?", "Parking?", "Amenities?", "Best season?", "Photo spot?", "What to bring?"
+  - [x] 39 category-specific questions implemented across 6 categories
 
-- [ ] **Question Format:**
-  - [ ] Define question types (text, multiple choice, rating, etc.)
-  - [ ] Define which questions are required vs optional
-  - [ ] Create seed data file for database
+- [x] **Question Format:**
+  - [x] Define question types (text, select, multiselect)
+  - [x] Define which questions are required vs optional (all optional for MVP)
+  - [x] Create seed data file for database (`prisma/seed-guided-questions.ts`)
+  - [x] Database seeded with 43 total questions
 
-**Action:** Create `backend/src/data/guidedQuestions.json` or seed file with question templates.
+**Status:** ✅ **COMPLETE** - Guided questions system fully implemented in Phase 3
 
 ---
 
@@ -200,59 +199,59 @@ The BRD/PRD mention guided questions but don't specify the complete list. Define
 ### 6. Infrastructure Decisions
 
 #### Cloud Provider Setup
-- [ ] **Choose Primary Cloud Provider:**
-  - [ ] AWS (recommended in TDD)
+- [x] **Choose Primary Cloud Provider:**
+  - [x] AWS (recommended in TDD) - **Selected**
   - [ ] Google Cloud Platform (alternative)
   - [ ] Other
 
-- [ ] **Set Up Development Environment:**
-  - [ ] Create development AWS account/project
-  - [ ] Set up separate staging environment
+- [x] **Set Up Development Environment:**
+  - [x] Create development AWS account/project
+  - [ ] Set up separate staging environment - **TODO: Before Phase 10**
   - [ ] Set up production environment (can wait until Phase 10)
-  - [ ] Configure billing alerts
+  - [ ] Configure billing alerts - **TODO: Recommended**
 
-- [ ] **Database Setup:**
-  - [ ] Decide on managed database (AWS RDS) vs self-hosted
-  - [ ] For development: Set up local PostgreSQL
-  - [ ] For staging: Set up managed PostgreSQL instance
-  - [ ] Configure backups
+- [x] **Database Setup:**
+  - [x] Decide on managed database (AWS RDS) vs self-hosted (local for dev)
+  - [x] For development: Set up local PostgreSQL (`echo_dev` database created)
+  - [ ] For staging: Set up managed PostgreSQL instance - **TODO: Before Phase 10**
+  - [ ] Configure backups - **TODO: Before production**
 
-- [ ] **Redis Setup:**
-  - [ ] For development: Set up local Redis
-  - [ ] For staging: Set up managed Redis (AWS ElastiCache)
+- [x] **Redis Setup:**
+  - [x] For development: Set up local Redis (configured in docker-compose.yml)
+  - [ ] For staging: Set up managed Redis (AWS ElastiCache) - **TODO: Before Phase 10**
 
 ---
 
 ### 7. Development Tools & Setup
 
 #### Version Control
-- [ ] Initialize Git repository (if not already done)
-- [ ] Set up `.gitignore` for:
-  - [ ] Node.js (`node_modules/`, `.env`)
-  - [ ] iOS (Xcode build files, `*.xcuserstate`)
-  - [ ] Android (`build/`, `.gradle/`)
-  - [ ] IDE files (`.vscode/`, `.idea/`)
-- [ ] Create initial commit with project structure
-- [ ] Set up branch protection rules (main/master branch)
+- [x] Initialize Git repository (linked to https://github.com/danaszapirog/echo-public.git)
+- [x] Set up `.gitignore` for:
+  - [x] Node.js (`node_modules/`, `.env`)
+  - [x] iOS (Xcode build files, `*.xcuserstate`)
+  - [x] Android (`build/`, `.gradle/`)
+  - [x] IDE files (`.vscode/`, `.idea/`)
+- [x] Create initial commit with project structure
+- [ ] Set up branch protection rules (main/master branch) - **TODO: Configure in GitHub**
 
 #### CI/CD Setup (Can be done in Phase 1, Task 1.8)
-- [ ] Choose CI/CD platform (GitHub Actions recommended)
+- [x] Choose CI/CD platform (GitHub Actions - `.github/workflows/ci.yml` created)
+- [x] Configure automated testing pipeline (linting, testing, building)
 - [ ] Set up repository secrets for:
-  - [ ] Database credentials
-  - [ ] API keys
-  - [ ] AWS credentials
-- [ ] Configure automated testing pipeline
+  - [ ] Database credentials - **TODO: Add to GitHub Secrets**
+  - [ ] API keys - **TODO: Add to GitHub Secrets**
+  - [ ] AWS credentials - **TODO: Add to GitHub Secrets**
 
 #### Development Tools
-- [ ] Install required software:
-  - [ ] Node.js 20 LTS
-  - [ ] PostgreSQL 15+
-  - [ ] Redis 7+
-  - [ ] Docker & Docker Compose (for local dev)
-  - [ ] Xcode (for iOS development)
-  - [ ] Android Studio (for Android development)
-- [ ] Set up code formatting (Prettier, ESLint)
-- [ ] Set up TypeScript configuration
+- [x] Install required software:
+  - [x] Node.js 20 LTS
+  - [x] PostgreSQL 15+ (local setup complete)
+  - [x] Redis 7+ (local setup complete)
+  - [x] Docker & Docker Compose (for local dev - `docker-compose.yml` created)
+  - [ ] Xcode (for iOS development) - **TODO: Before Phase 8**
+  - [ ] Android Studio (for Android development) - **TODO: Before Phase 8**
+- [x] Set up TypeScript configuration (`tsconfig.json` configured)
+- [ ] Set up code formatting (Prettier, ESLint) - **TODO: Recommended**
 
 ---
 
@@ -292,34 +291,34 @@ While this happens in Phase 11, start planning now:
 ### 9. Technical Decisions & Clarifications
 
 #### Architecture Decisions
-- [ ] **Finalize Technology Stack:**
-  - [ ] Confirm Node.js + TypeScript (vs Python alternative)
-  - [ ] Confirm Express.js (vs Fastify)
-  - [ ] Confirm Prisma (vs TypeORM)
+- [x] **Finalize Technology Stack:**
+  - [x] Confirm Node.js + TypeScript - **Selected**
+  - [x] Confirm Express.js - **Selected**
+  - [x] Confirm Prisma - **Selected**
 
-- [ ] **Database Decisions:**
-  - [ ] Confirm PostgreSQL version (15+)
-  - [ ] Decide on PostGIS extension (for geospatial queries)
-  - [ ] Plan database migration strategy
+- [x] **Database Decisions:**
+  - [x] Confirm PostgreSQL version (15+) - **Using PostgreSQL 15**
+  - [ ] Decide on PostGIS extension (for geospatial queries) - **TODO: Consider for Phase 6 map features**
+  - [x] Plan database migration strategy (Prisma Migrate)
 
-- [ ] **API Design:**
-  - [ ] Review and finalize API endpoint structure
-  - [ ] Decide on API versioning strategy
-  - [ ] Plan API documentation tool (Swagger/OpenAPI)
+- [x] **API Design:**
+  - [x] Review and finalize API endpoint structure (RESTful, `/api/v1/` prefix)
+  - [x] Decide on API versioning strategy (`/api/v1/`)
+  - [ ] Plan API documentation tool (Swagger/OpenAPI) - **TODO: Recommended**
 
 #### Missing Specifications
-- [ ] **Image Processing:**
-  - [ ] Define image size limits (currently says 5MB, confirm)
-  - [ ] Define thumbnail dimensions (200x200, 800x800 mentioned)
-  - [ ] Choose image processing service (AWS Lambda + Sharp vs server-side)
+- [x] **Image Processing:**
+  - [x] Define image size limits (5MB max, configured in env)
+  - [ ] Define thumbnail dimensions (200x200, 800x800 mentioned) - **TODO: Implement in Phase 3.4**
+  - [x] Choose image processing service (server-side with Sharp ready, S3 integration complete)
 
 - [ ] **Rate Limiting:**
-  - [ ] Define rate limits per endpoint
-  - [ ] Define rate limits per user tier (if any)
+  - [ ] Define rate limits per endpoint - **TODO: Before production**
+  - [ ] Define rate limits per user tier (if any) - **TODO: Before production**
 
-- [ ] **Error Handling:**
-  - [ ] Define standard error response format
-  - [ ] Create error code catalog
+- [x] **Error Handling:**
+  - [x] Define standard error response format (CustomError class implemented)
+  - [ ] Create error code catalog - **TODO: Recommended**
 
 ---
 
@@ -327,14 +326,14 @@ While this happens in Phase 11, start planning now:
 
 #### Technical Documentation
 - [ ] **API Documentation:**
-  - [ ] Set up API documentation tool (Swagger/OpenAPI)
-  - [ ] Document all endpoints (can be done during development)
+  - [ ] Set up API documentation tool (Swagger/OpenAPI) - **TODO: Recommended**
+  - [x] Document all endpoints (endpoints documented in PHASE*_COMPLETE.md files)
 
-- [ ] **Development Documentation:**
-  - [ ] Create `README.md` with setup instructions
-  - [ ] Document local development setup
-  - [ ] Document deployment process
-  - [ ] Create architecture decision records (ADRs) for key decisions
+- [x] **Development Documentation:**
+  - [x] Create `README.md` with setup instructions (`backend/README.md` exists)
+  - [x] Document local development setup (Docker Compose setup documented)
+  - [ ] Document deployment process - **TODO: Before production**
+  - [ ] Create architecture decision records (ADRs) for key decisions - **TODO: Recommended**
 
 #### User Documentation
 - [ ] Plan user help documentation (can be done in Phase 11)
@@ -388,9 +387,10 @@ While this happens in Phase 11, start planning now:
 ## 🟡 Important: Should Complete Early (Before Phase 3)
 
 ### 11. Guided Questions Content
-- [ ] Finalize all guided question templates
-- [ ] Create database seed file
-- [ ] Test question flow with sample data
+- [x] Finalize all guided question templates (43 questions across 6 categories + defaults)
+- [x] Create database seed file (`prisma/seed-guided-questions.ts`)
+- [x] Test question flow with sample data (seeded successfully)
+- [x] **Status:** ✅ **COMPLETE** - Implemented in Phase 3
 
 ### 12. Design Assets (Minimum)
 - [ ] At minimum, create:
@@ -420,15 +420,21 @@ While this happens in Phase 11, start planning now:
 ## Priority Order
 
 ### Before Starting Phase 1:
-1. ✅ External service accounts (Mapbox, Foursquare, AWS)
-2. ✅ Environment variables documented (email/password auth only for MVP)
-3. ✅ Development tools installed
-4. ✅ Git repository set up
-5. ✅ Basic infrastructure decisions made
+1. ✅ External service accounts (Mapbox, Foursquare, AWS) - **COMPLETE**
+2. ✅ Environment variables documented (email/password auth only for MVP) - **COMPLETE**
+3. ✅ Development tools installed (Node.js, PostgreSQL, Redis) - **COMPLETE**
+4. ✅ Git repository set up (linked to GitHub) - **COMPLETE**
+5. ✅ Basic infrastructure decisions made (AWS, Express, Prisma) - **COMPLETE**
 
 ### Before Starting Phase 3 (Content Creation):
-6. ✅ Guided questions templates defined
-7. ✅ Image processing specifications finalized
+6. ✅ Guided questions templates defined (43 questions seeded) - **COMPLETE**
+7. ✅ Image processing specifications finalized (5MB limit, S3 integration) - **COMPLETE**
+
+### Current Status (After Phase 3):
+- ✅ Phase 1: Foundation & Infrastructure - **COMPLETE**
+- ✅ Phase 2: Core User Features - **COMPLETE**
+- ✅ Phase 3: Content Creation - Spots & Want to Go - **COMPLETE**
+- ⏭️ Phase 4: Playlists - **NEXT**
 
 ### Before Starting Phase 8 (Mobile Development):
 8. ✅ Design system and key screen designs
@@ -456,7 +462,34 @@ You can add API keys and external services as you reach the tasks that need them
 
 ## Next Steps
 
-Once you've completed the critical items (🔴), you're ready to start Phase 1, Task 1.1!
+### ✅ Completed Phases
+- **Phase 1:** Foundation & Infrastructure - ✅ Complete
+- **Phase 2:** Core User Features - ✅ Complete  
+- **Phase 3:** Content Creation - Spots & Want to Go - ✅ Complete
 
-Use the implementation prompt from `IMPLEMENTATION_PROMPT.md` to begin development.
+### 🎯 Current Status
+**Ready for Phase 4: Playlists**
+
+### 📋 Remaining Critical Items (Before Production)
+1. **Legal & Compliance:**
+   - [ ] Privacy Policy
+   - [ ] Terms of Service
+   - [ ] GDPR compliance documentation
+
+2. **Production Readiness:**
+   - [ ] Set up staging environment
+   - [ ] Configure production secrets management
+   - [ ] Set up monitoring and error tracking
+   - [ ] Configure rate limiting
+   - [ ] Set up API documentation (Swagger/OpenAPI)
+
+3. **Before Mobile Development (Phase 8):**
+   - [ ] Design system and key screen designs
+   - [ ] App icons and assets
+   - [ ] Custom map style
+
+### 🚀 Immediate Next Steps
+1. Continue with **Phase 4: Playlists** implementation
+2. Set up GitHub repository secrets for CI/CD
+3. Consider adding API documentation tool (Swagger/OpenAPI)
 

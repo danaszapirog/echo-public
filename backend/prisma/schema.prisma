@@ -167,3 +167,24 @@ model FeedItem {
   @@index([authorId])
   @@map("feed_items")
 }
+
+model GuidedQuestionTemplate {
+  id                  String   @id @default(uuid()) @db.Uuid
+  category            String   @db.VarChar(50) // e.g., "restaurant", "fitness", "default"
+  displayName         String   @map("display_name") @db.VarChar(100) // e.g., "Restaurant", "Fitness", "Default"
+  questionId          String   @map("question_id") @db.VarChar(100) // Unique ID for the question (e.g., "must_order", "vibe")
+  questionText        String   @map("question_text") @db.Text // The actual question text
+  questionType        String   @map("question_type") @db.VarChar(20) // "text", "select", "multiselect"
+  isRequired          Boolean  @default(false) @map("is_required")
+  placeholder         String?  @db.Text // Optional placeholder text
+  options             Json?    // JSON array for select/multiselect options
+  displayOrder        Int      @default(0) @map("display_order") // Order in which to display questions
+  foursquareCategories String[] @map("foursquare_categories") // Array of Foursquare category names this applies to
+  
+  createdAt           DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt           DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@index([category])
+  @@index([questionId])
+  @@map("guided_question_templates")
+}

@@ -1,6 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
 import { placeDataService } from '../services/placeDataService';
 import { getOrCreatePlace, getPlaceById } from '../services/placeService';
+import { getUserSpotForPlace } from '../services/spotService';
+import { getUserWantToGoForPlace } from '../services/wantToGoService';
+import { getQuestionsForCategory } from '../services/guidedQuestionsService';
 import { searchPlacesSchema } from '../validators/placeValidator';
 import { CustomError } from '../middleware/errorHandler';
 
@@ -72,6 +75,35 @@ export const getPlaceDetails = async (
       throw new CustomError('Place not found', 404);
     }
 
+    // Get user's spot and want-to-go if authenticated
+    let userSpot = null;
+    let userWantToGo = null;
+
+    if (req.user) {
+      const [spot, wantToGo] = await Promise.all([
+        getUserSpotForPlace(req.user.userId, place.id),
+        getUserWantToGoForPlace(req.user.userId, place.id),
+      ]);
+
+      if (spot) {
+        userSpot = {
+          id: spot.id,
+          rating: spot.rating,
+          notes: spot.notes,
+          tags: spot.tags,
+          created_at: spot.createdAt,
+        };
+      }
+
+      if (wantToGo) {
+        userWantToGo = {
+          id: wantToGo.id,
+          notes: wantToGo.notes,
+          created_at: wantToGo.createdAt,
+        };
+      }
+    }
+
     res.status(200).json({
       place: {
         id: place.id,
@@ -86,6 +118,62 @@ export const getPlaceDetails = async (
         country: place.cachedData?.country,
         cachedAt: place.cachedAt,
       },
+      user_spot: userSpot,
+      user_want_to_go: userWantToGo,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getPlaceQuestions = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const { placeId } = req.params;
+
+    // Check if placeId is a UUID (our internal ID) or external ID
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    const isUUID = uuidRegex.test(placeId);
+
+    let place;
+
+    if (isUUID) {
+      place = await getPlaceById(placeId);
+    }
+
+    if (!place) {
+      place = await getOrCreatePlace(placeId, 'foursquare');
+    }
+
+    if (!place) {
+      throw new CustomError('Place not found', 404);
+    }
+
+    // Get the first category from place categories (if available)
+    const categories = place.categories as string[] | null;
+    const firstCategory = categories && categories.length > 0 ? categories[0] : undefined;
+
+    // Get questions for this place's category
+    const questions = await getQuestionsForCategory('default', firstCategory);
+
+    // Determine the template category used
+    const category = firstCategory || 'default';
+
+    res.status(200).json({
+      questions: questions.map((q) => ({
+        id: q.questionId,
+        question: q.question,
+        type: q.type,
+        required: q.required,
+        placeholder: q.placeholder,
+        options: q.options,
+        order: q.order,
+      })),
+      category,
+      defaultQuestions: !firstCategory,
     });
   } catch (error) {
     next(error);
