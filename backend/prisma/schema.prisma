@@ -20,6 +20,8 @@ model User {
   role              String    @default("consumer") @db.VarChar(20)
   isVerified        Boolean   @default(false) @map("is_verified")
   isPrivate         Boolean   @default(false) @map("is_private")
+  isFeatured        Boolean   @default(false) @map("is_featured") // For featured creators
+  onboardingCompletedAt DateTime? @map("onboarding_completed_at") @db.Timestamptz(6)
   createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt         DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
   lastLoginAt       DateTime? @map("last_login_at") @db.Timestamptz(6)
@@ -36,6 +38,7 @@ model User {
   @@index([email])
   @@index([username])
   @@index([role])
+  @@index([role, isVerified, isFeatured]) // For creator queries
   @@map("users")
 }
 
@@ -57,6 +60,7 @@ model Place {
 
   @@index([externalPlaceId])
   @@index([categories], type: Gin)
+  @@index([latitude, longitude]) // Geospatial index for viewport queries
   @@map("places")
 }
 

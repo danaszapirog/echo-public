@@ -1,6 +1,7 @@
 import { prisma } from '../config/prisma';
 import { CustomError } from '../middleware/errorHandler';
 import { validateQuestionIds } from './guidedQuestionsService';
+import { generateFeedItems } from './feedService';
 
 export interface CreateSpotData {
   placeId: string;
@@ -82,6 +83,12 @@ export async function createSpot(data: CreateSpotData) {
         },
       },
     },
+  });
+
+  // Generate feed items for followers (fire and forget)
+  generateFeedItems(data.userId, 'spot', spot.id).catch((error) => {
+    // Log error but don't fail spot creation
+    console.error('Failed to generate feed items for spot:', error);
   });
 
   return spot;

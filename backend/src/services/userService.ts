@@ -109,10 +109,16 @@ export const updateUser = async (
   }
 };
 
+export interface UserPublicProfile extends Omit<UserProfile, 'email'> {
+  email?: string; // Optional - hidden for private profiles
+  followStatus?: 'active' | 'pending' | 'none';
+  canViewContent: boolean;
+}
+
 export const getUserPublicProfile = async (
   userId: string,
   requestingUserId?: string
-): Promise<UserProfile | null> => {
+): Promise<UserPublicProfile | null> => {
   const user = await prisma.user.findUnique({
     where: { id: userId },
     select: {
@@ -133,10 +139,19 @@ export const getUserPublicProfile = async (
     return null;
   }
 
-  // If user is private and not the requesting user, hide email
+  // Creators are always public
+  if (user.role === 'creator') {
+    return {
+      ...user,
+      followStatus: undefined,
+      canViewContent: true,
+    };
+  }
+
+  // If user is private and not the requesting user
   if (user.isPrivate && user.id !== requestingUserId) {
-    // Check if requesting user follows this user
     if (requestingUserId) {
+      // Check follow relationship
       const follow = await prisma.follow.findUnique({
         where: {
           followerId_followeeId: {
@@ -146,21 +161,154 @@ export const getUserPublicProfile = async (
         },
       });
 
-      // If not following, don't show profile
-      if (!follow || follow.status !== 'active') {
-        return null;
+      if (follow && follow.status === 'active') {
+        // Following: show full profile
+        return {
+          ...user,
+          followStatus: 'active',
+          canViewContent: true,
+        };
+      } else if (follow && follow.status === 'pending') {
+        // Pending request: show limited profile
+        const { email, ...userWithoutEmail } = user;
+        return {
+          ...userWithoutEmail,
+          followStatus: 'pending',
+          canViewContent: false,
+        };
+      } else {
+        // Not following: show limited profile
+        const { email, ...userWithoutEmail } = user;
+        return {
+          ...userWithoutEmail,
+          followStatus: 'none',
+          canViewContent: false,
+        };
       }
     } else {
-      // Not authenticated, don't show private profile
+      // Not authenticated: don't show private profile
       return null;
     }
   }
 
-  // Creators are always public
-  if (user.role === 'creator') {
-    return user;
+  // Public user or viewing own profile
+  let followStatus: 'active' | 'pending' | 'none' | undefined = undefined;
+  if (requestingUserId && user.id !== requestingUserId) {
+    const follow = await prisma.follow.findUnique({
+      where: {
+        followerId_followeeId: {
+          followerId: requestingUserId,
+          followeeId: userId,
+        },
+      },
+    });
+    followStatus = follow?.status === 'active' ? 'active' : follow?.status === 'pending' ? 'pending' : 'none';
   }
 
-  return user;
+  return {
+    ...user,
+    followStatus,
+    canViewContent: true,
+  };
+};
+
+/**
+ * Search users by username
+ */
+export const searchUsers = async (
+  searchQuery: string,
+  requestingUserId?: string,
+  limit: number = 20,
+  offset: number = 0
+): Promise<{
+  users: Array<{
+    id: string;
+    username: string;
+    profilePictureUrl: string | null;
+    role: string;
+    isPrivate: boolean;
+    isVerified: boolean;
+  }>;
+  total: number;
+  limit: number;
+  offset: number;
+}> => {
+  if (!searchQuery || searchQuery.trim().length === 0) {
+    return {
+      users: [],
+      total: 0,
+      limit,
+      offset,
+    };
+  }
+
+  const query = searchQuery.trim();
+
+  // Build where clause
+  const where: any = {
+    username: {
+      contains: query,
+      mode: 'insensitive',
+    },
+  };
+
+  // Get all matching users first
+  const allUsers = await prisma.user.findMany({
+    where,
+    select: {
+      id: true,
+      username: true,
+      profilePictureUrl: true,
+      role: true,
+      isPrivate: true,
+      isVerified: true,
+    },
+  });
+
+  // Filter out private users unless requesting user follows them
+  let filteredUsers = allUsers;
+  if (requestingUserId) {
+    // Get all follows where requesting user is follower
+    const follows = await prisma.follow.findMany({
+      where: {
+        followerId: requestingUserId,
+        status: 'active',
+      },
+      select: {
+        followeeId: true,
+      },
+    });
+
+    const followedUserIds = new Set(follows.map((f) => f.followeeId));
+
+    // Filter: show user if:
+    // 1. User is public, OR
+    // 2. User is creator (always public), OR
+    // 3. Requesting user follows them, OR
+    // 4. It's the requesting user themselves
+    filteredUsers = allUsers.filter(
+      (user) =>
+        !user.isPrivate ||
+        user.role === 'creator' ||
+        followedUserIds.has(user.id) ||
+        user.id === requestingUserId
+    );
+  } else {
+    // Not authenticated: only show public users and creators
+    filteredUsers = allUsers.filter(
+      (user) => !user.isPrivate || user.role === 'creator'
+    );
+  }
+
+  // Apply pagination
+  const total = filteredUsers.length;
+  const paginatedUsers = filteredUsers.slice(offset, offset + limit);
+
+  return {
+    users: paginatedUsers,
+    total,
+    limit,
+    offset,
+  };
 };
 

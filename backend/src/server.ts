@@ -41,12 +41,22 @@ import placeRoutes from './routes/placeRoutes';
 import spotRoutes from './routes/spotRoutes';
 import wantToGoRoutes from './routes/wantToGoRoutes';
 import mapRoutes from './routes/mapRoutes';
+import playlistRoutes from './routes/playlistRoutes';
+import followRoutes from './routes/followRoutes';
+import feedRoutes from './routes/feedRoutes';
+import onboardingRoutes from './routes/onboardingRoutes';
+import adminRoutes from './routes/adminRoutes';
 app.use(`/api/${env.API_VERSION}/auth`, authRoutes);
 app.use(`/api/${env.API_VERSION}/users`, userRoutes);
 app.use(`/api/${env.API_VERSION}/places`, placeRoutes);
 app.use(`/api/${env.API_VERSION}/spots`, spotRoutes);
 app.use(`/api/${env.API_VERSION}/want-to-go`, wantToGoRoutes);
 app.use(`/api/${env.API_VERSION}/map`, mapRoutes);
+app.use(`/api/${env.API_VERSION}/playlists`, playlistRoutes);
+app.use(`/api/${env.API_VERSION}/follows`, followRoutes);
+app.use(`/api/${env.API_VERSION}/feed`, feedRoutes);
+app.use(`/api/${env.API_VERSION}/onboarding`, onboardingRoutes);
+app.use(`/api/${env.API_VERSION}/admin`, adminRoutes);
 
 // 404 handler
 app.use(notFoundHandler);

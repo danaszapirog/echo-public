@@ -48,6 +48,9 @@ const envSchema = z.object({
   MAX_FILE_SIZE: z.string().default('5242880'),
   ALLOWED_IMAGE_TYPES: z.string().default('jpg,jpeg,png,webp'),
   MAX_PHOTOS_PER_SPOT: z.string().default('5'),
+  
+  // Admin
+  ADMIN_USER_IDS: z.string().optional(), // Comma-separated list of admin user IDs
 });
 
 export type Env = z.infer<typeof envSchema>;

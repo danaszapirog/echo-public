@@ -138,3 +138,102 @@ export const getPlaceById = async (placeId: string): Promise<PlaceWithDetails | 
   };
 };
 
+/**
+ * Get place summary card data
+ * Returns aggregated data about network spots for a place
+ */
+export async function getPlaceSummary(placeId: string, userId?: string) {
+  // Get place
+  const place = await prisma.place.findUnique({
+    where: { id: placeId },
+    select: {
+      id: true,
+      name: true,
+      categories: true,
+    },
+  });
+
+  if (!place) {
+    throw new CustomError('Place not found', 404);
+  }
+
+  // Get network spots (from users the current user follows, or all if not authenticated)
+  let networkSpotsQuery: any = {
+    placeId,
+  };
+
+  if (userId) {
+    // Get users the current user follows
+    const follows = await prisma.follow.findMany({
+      where: {
+        followerId: userId,
+        status: 'active',
+      },
+      select: {
+        followeeId: true,
+      },
+    });
+
+    const followedUserIds = follows.map((f) => f.followeeId);
+
+    if (followedUserIds.length > 0) {
+      networkSpotsQuery.userId = { in: followedUserIds };
+    } else {
+      // User follows no one, return empty summary
+      return {
+        place_id: placeId,
+        name: place.name,
+        primary_category:
+          Array.isArray(place.categories) && place.categories.length > 0
+            ? place.categories[0]
+            : null,
+        network_spot_count: 0,
+        average_rating: null,
+        common_tags: [],
+      };
+    }
+  }
+
+  // Get network spots with aggregations
+  const networkSpots = await prisma.spot.findMany({
+    where: networkSpotsQuery,
+    select: {
+      rating: true,
+      tags: true,
+    },
+  });
+
+  // Calculate statistics
+  const networkSpotCount = networkSpots.length;
+  const averageRating =
+    networkSpotCount > 0
+      ? networkSpots.reduce((sum, s) => sum + s.rating, 0) / networkSpotCount
+      : null;
+
+  // Get common tags (tags that appear in at least 2 spots)
+  const tagCounts = new Map<string, number>();
+  for (const spot of networkSpots) {
+    for (const tag of spot.tags) {
+      tagCounts.set(tag, (tagCounts.get(tag) || 0) + 1);
+    }
+  }
+
+  const commonTags = Array.from(tagCounts.entries())
+    .filter(([_, count]) => count >= 2)
+    .sort(([_, countA], [__, countB]) => countB - countA)
+    .slice(0, 5) // Top 5 most common tags
+    .map(([tag, _]) => tag);
+
+  return {
+    place_id: placeId,
+    name: place.name,
+    primary_category:
+      Array.isArray(place.categories) && place.categories.length > 0
+        ? place.categories[0]
+        : null,
+    network_spot_count: networkSpotCount,
+    average_rating: averageRating ? Math.round(averageRating * 10) / 10 : null, // Round to 1 decimal
+    common_tags: commonTags,
+  };
+}
+

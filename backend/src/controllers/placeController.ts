@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { placeDataService } from '../services/placeDataService';
-import { getOrCreatePlace, getPlaceById } from '../services/placeService';
+import { getOrCreatePlace, getPlaceById, getPlaceSummary } from '../services/placeService';
 import { getUserSpotForPlace } from '../services/spotService';
 import { getUserWantToGoForPlace } from '../services/wantToGoService';
 import { getQuestionsForCategory } from '../services/guidedQuestionsService';
@@ -175,6 +175,39 @@ export const getPlaceQuestions = async (
       category,
       defaultQuestions: !firstCategory,
     });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getPlaceSummaryHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const { placeId } = req.params;
+
+    // Check if placeId is a UUID (our internal ID) or external ID
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    const isUUID = uuidRegex.test(placeId);
+
+    let internalPlaceId = placeId;
+
+    // If not a UUID, try to get or create place to get internal ID
+    if (!isUUID) {
+      const place = await getOrCreatePlace(placeId, 'foursquare');
+      if (!place) {
+        throw new CustomError('Place not found', 404);
+      }
+      internalPlaceId = place.id;
+    }
+
+    // Get summary (optionally authenticated)
+    const userId = req.user?.userId;
+    const summary = await getPlaceSummary(internalPlaceId, userId);
+
+    res.status(200).json(summary);
   } catch (error) {
     next(error);
   }
